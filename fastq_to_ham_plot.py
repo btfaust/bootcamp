@@ -5,17 +5,43 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#f = open('./CTGATC.fastq')
+#f = open('./CTGATC.fastq', 'r')
 
 def getSeqs(fastq_file):
 	#Parse a FASTQ for sequence identities and corresponding sequences
-	seqences = {}
+	sequences = {}
 	return sequences
 
 def hamDist(str1, str2):
    #Count the # of differences between equal length strings str1 and str2
-   diffs = 0
-   return diffs
+   counts = 0
+   for ch1,ch2 in zip(str1,str2):
+       if ch1 != ch2:
+           counts += 1
+   return counts
+
+
+sequences = {
+    "A": "ATGGCA",
+    "B": "TTCGAC",
+    "C": "GCGGCA",
+    "D": "GCTGCA"
+}        #getSeqs(f)
+ids_list = sorted(sequences.keys())
+hammArray = np.zeros( (len(sequences),len(sequences)) )
+
+for index,id in enumerate(ids_list):
+    print("calculating for:", index, id, sequences[id])
+    for next_index,next_id in enumerate(ids_list[index+1:], start=index+1):
+        print(index,next_index)
+        seq1 = sequences[id]
+        seq2 = sequences[next_id]
+        hd = hamDist(seq1,seq2)
+        hammArray[index][next_index] = hd
+        hammArray[next_index][index] = hd
+
+print()
+print(hammArray)
 
 example_seqNameList = ['A','B','C','D','E']
 example_hamArray = np.array([
@@ -29,13 +55,13 @@ example_hamArray = np.array([
 
 
 fig, ax = plt.subplots()
-im = ax.imshow(example_hamArray)
+im = ax.imshow(hammArray)
 
 ax.invert_yaxis() # so that the axes lists both start at the origin; not default for imshow
-ax.set_xticks(np.arange(len(example_seqNameList)))
-ax.set_yticks(np.arange(len(example_seqNameList)))
-ax.set_xticklabels(example_seqNameList)
-ax.set_yticklabels(example_seqNameList)
+ax.set_xticks(np.arange(len(ids_list)))
+ax.set_yticks(np.arange(len(ids_list)))
+ax.set_xticklabels(ids_list)
+ax.set_yticklabels(ids_list)
 ax.set_title("Hamming Distance of Sequence Pairs")
 fig.tight_layout()
 fig.colorbar(im)
